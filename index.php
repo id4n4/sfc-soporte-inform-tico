@@ -7,7 +7,7 @@ $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $email = $_POST["email"];
-  $password = $_POST["password"];
+  $password = $_POST["clave"];
 
   try {
     $isLogin = loginUser($email, $password);
@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <?php if ($error): ?>
       <p class="error">
-        <?php htmlspecialchars($error); ?>
+        <?= htmlspecialchars($error); ?>
       </p>
     <?php endif; ?>
 

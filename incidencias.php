@@ -1,19 +1,29 @@
+<?php
+require("helper.php");
+
+requireLogin();
+
+$userName = $_SESSION["userName"];
+?>
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Soporte Informático — Mis incidencias</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
   <header class="header-app">
     <span class="titulo">Soporte Informático</span>
-    <span class="usuario">
+    <span class="usuario" style="text-transform: capitalize;">
       <!-- El nombre "Ana Ejemplo" es solo de muestra: en la versión final debe salir
       el nombre del usuario que ha iniciado sesión -->
-      Hola, Ana Ejemplo
+      Hola, <?= $userName ?>
       · <a href="logout.php">Cerrar sesión</a>
     </span>
   </header>
@@ -74,4 +84,5 @@
   </main>
 
 </body>
+
 </html>
