@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+// MARK: Connect
 function connect()
 {
   $host = "localhost";
@@ -23,6 +24,7 @@ function connect()
   }
 }
 
+// MARK: Login
 function loginUser($email, $password)
 {
   $pdo = connect();
@@ -65,5 +67,29 @@ function redirectIfLoggedIn()
     header("location: incidencias.php");
     exit();
   }
+}
+
+// MARK: Incidents
+function addIncidents($title, $description)
+{
+  if (!isset($_SESSION["isLogin"])) {
+    throw new Exception("Usuario no autenticado");
+  }
+  $userId = $_SESSION["id"];
+  $currentDate = date("Y-m-d H:i:s");
+  $state = 'abierta';
+  $pdo = connect();
+  $stmt = $pdo->prepare("INSERT INTO incidencias (usuario_id, asunto, descripcion, estado, fecha_creacion) VALUES (?, ?, ?, ?, ?)");
+  $stmt->execute([$userId, $title, $description, $state, $currentDate]);
+}
+
+function getIncidents()
+{
+  $userId = $_SESSION["id"];
+  $pdo = connect();
+  $stmt = $pdo->prepare("SELECT * FROM incidencias WHERE usuario_id = ? ORDER BY fecha_creacion DESC");
+  $stmt->execute([$userId]);
+  $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  return $result;
 }
 

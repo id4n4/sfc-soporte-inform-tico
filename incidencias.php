@@ -4,6 +4,26 @@ require("helper.php");
 requireLogin();
 
 $userName = $_SESSION["userName"];
+$error = "";
+$incidents = [];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $title = $_POST["asunto"] ?? '';
+  $description = $_POST['descripcion'] ?? '';
+
+  try {
+    addIncidents($title, $description);
+    header("Location: incidencias.php");
+    exit();
+  } catch (PDOException $e) {
+    $error = $e->getMessage();
+  }
+
+}
+
+if (!$error) {
+  $incidents = getIncidents();
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,6 +52,9 @@ $userName = $_SESSION["userName"];
 
     <!-- Si hay un error al crear la incidencia (campos vacíos, etc.), aquí debe aparecer:
     <p class="error">El asunto y la descripción son obligatorios.</p> -->
+    <?php if ($error): ?>
+      <p class="error"><?= htmlspecialchars($error) ?></p>
+    <?php endif; ?>
 
     <section class="card">
       <h2>Nueva incidencia</h2>
@@ -54,6 +77,7 @@ $userName = $_SESSION["userName"];
       base de datos para el usuario que ha iniciado sesión. Si no tiene ninguna,
       se muestra en su lugar: <p class="vacio">Todavía no has enviado ninguna incidencia.</p> -->
 
+
       <table>
         <thead>
           <tr>
@@ -64,18 +88,26 @@ $userName = $_SESSION["userName"];
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>El ordenador no enciende</td>
-            <td>Al pulsar el botón de encendido no pasa nada.</td>
-            <td><span class="estado estado-abierta">Abierta</span></td>
-            <td>2026-09-10 09:15:00</td>
-          </tr>
-          <tr>
-            <td>No tengo conexión a internet</td>
-            <td>El wifi aparece conectado pero no carga ninguna página.</td>
-            <td><span class="estado estado-en_proceso">En proceso</span></td>
-            <td>2026-09-12 11:40:00</td>
-          </tr>
+          <?php if (count($incidents) === 0): ?>
+            <tr>
+              <td colspan="4">
+                <p class="vacio" style="text-align: center;">Todavía no has enviado ninguna incidencia.</p>
+              </td>
+            </tr>
+          <?php else: ?>
+            <?php foreach ($incidents as $incident): ?>
+              <tr>
+                <td><?= htmlspecialchars($incident['asunto']) ?></td>
+                <td><?= htmlspecialchars($incident['descripcion']) ?></td>
+                <td>
+                  <span class="estado estado-abierta">
+                    <?= htmlspecialchars($incident['estado']) ?>
+                  </span>
+                </td>
+                <td><?= htmlspecialchars($incident['fecha_creacion']) ?></td>
+              </tr>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </tbody>
       </table>
 
