@@ -75,6 +75,11 @@ button {
   cursor: pointer;
 }
 
+table button {
+  margin: 0;
+  padding: 4px 8px;
+}
+
 button:hover {
   background-color: #1d4ed8;
 }
@@ -112,6 +117,7 @@ th, td {
   padding: 8px;
   text-align: left;
   font-size: 0.9rem;
+  height: 100%xºx ;
 }
 
 th {
@@ -140,4 +146,18 @@ th {
 .estado-cerrada {
   background-color: #dcfce7;
   color: #166534;
+}
+
+.table-action {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.close-button {
+  background: #78BF9E;
+}
+
+.close-button:hover {
+  background: #A9D9C2;
 }

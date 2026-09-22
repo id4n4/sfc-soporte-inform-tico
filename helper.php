@@ -93,3 +93,10 @@ function getIncidents()
   return $result;
 }
 
+function changeStateIncident($id, $newState)
+{
+  $pdo = connect();
+  $stmt = $pdo->prepare("UPDATE incidencias SET estado = ? WHERE id = ?");
+  $stmt->execute([$newState, $id]);
+}
+

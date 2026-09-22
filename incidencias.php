@@ -8,6 +8,19 @@ $error = "";
 $incidents = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if (isset($_POST['cambiar_estado'])) {
+    $incidentId = (int) ($_POST['incidencia_id'] ?? 0);
+    $newState = $_POST['estado'] ?? '';
+    $validStates = ['abierta', 'en_proceso', 'cerrada'];
+
+    if ($incidentId > 0 && in_array($newState, $validStates, true)) {
+      changeStateIncident($incidentId, $newState);
+    }
+
+    header("Location: incidencias.php");
+    exit();
+  }
+
   $title = $_POST["asunto"] ?? '';
   $description = $_POST['descripcion'] ?? '';
 
@@ -85,6 +98,7 @@ if (!$error) {
             <th>Descripción</th>
             <th>Estado</th>
             <th>Fecha</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -100,11 +114,46 @@ if (!$error) {
                 <td><?= htmlspecialchars($incident['asunto']) ?></td>
                 <td><?= htmlspecialchars($incident['descripcion']) ?></td>
                 <td>
-                  <span class="estado estado-abierta">
-                    <?= htmlspecialchars($incident['estado']) ?>
-                  </span>
+                  <!-- abierta, en_proceso, cerrada -->
+                  <?php if ($incident['estado'] === 'abierta'): ?>
+                    <span class="estado estado-abierta">
+                      <?= htmlspecialchars($incident['estado']) ?>
+                    </span>
+                  <?php elseif ($incident['estado'] === 'en_proceso'): ?>
+                    <span class="estado estado-en_proceso">
+                      <?= htmlspecialchars($incident['estado']) ?>
+                    </span>
+                  <?php else: ?>
+                    <span class="estado estado-cerrada">
+                      <?= htmlspecialchars($incident['estado']) ?>
+                    </span>
+                  <?php endif; ?>
                 </td>
                 <td><?= htmlspecialchars($incident['fecha_creacion']) ?></td>
+                <td>
+                  <div class="table-action">
+                    <!-- abierta, en_proceso, cerrada -->
+                    <?php if ($incident['estado'] === 'abierta'): ?>
+                      <form method="post" action="incidencias.php">
+                        <input type="hidden" name="incidencia_id" value="<?= (int) $incident['id'] ?>">
+                        <input type="hidden" name="estado" value="en_proceso">
+                        <button type="submit" name="cambiar_estado">Iniciar</button>
+                      </form>
+                      <form method="post" action="incidencias.php">
+                        <input type="hidden" name="incidencia_id" value="<?= (int) $incident['id'] ?>">
+                        <input type="hidden" name="estado" value="cerrada">
+                        <button type="submit" name="cambiar_estado" class="close-button">✔️</button>
+                      </form>
+                    <?php elseif ($incident['estado'] === 'en_proceso'): ?>
+                      <form method="post" action="incidencias.php">
+                        <input type="hidden" name="incidencia_id" value="<?= (int) $incident['id'] ?>">
+                        <input type="hidden" name="estado" value="cerrada">
+                        <button type="submit" name="cambiar_estado" class="close-button">✔️</button>
+                      </form>
+                    <?php else: ?>
+                    <?php endif; ?>
+                  </div>
+                </td>
               </tr>
             <?php endforeach; ?>
           <?php endif; ?>
